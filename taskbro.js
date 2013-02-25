@@ -33,14 +33,17 @@ $.fn.task_index = function(){
 $.fn.task_count = function(){
   return $.fn.task_index().length;
 }
-
+var tog_val=1;
 $.fn.create_tile = function(task_uuid, task_title , task_color, task_created_at){
   var new_tile = "<div id='"+ task_uuid +"' class='tilebox "+ task_uuid +"' style='position:relative;background-color:"+task_color+";'>";
-  new_tile = new_tile + "<a href='#' class='close'>X</a>";
-  new_tile = new_tile + "<div class='edit' style='position:relative;width:90%'>" + task_title + "</div>";
+  new_tile =  new_tile + "<div class='color_edit'></div>";
+  new_tile =  new_tile + "<a href='#' class='close'>X</a>";
+  new_tile = new_tile + "<div class='edit' style='margin:4px;position:relative;width:90%'>" + task_title + "</div>";
   new_tile = new_tile + "<div class='datetime'>" + task_created_at + "</div>";
   new_tile = new_tile + "</div>";
   $('#tiles_container').append(new_tile).css( 'display', 'block');
+
+  tog_val = !tog_val;
 }
 
 $.fn.create_tile_list = function(task_uuid, task_title){
@@ -77,7 +80,17 @@ var data = {
 }
 
 $(document).ready(function(){
-  
+
+  $('#form_container').hide();
+
+  $('#btn_add').click(function () {
+        $( "#form_container" ).show();
+  });
+
+  $('#btn_cancel').click(function () {
+        $( "#form_container" ).hide();
+  });
+
   //Filter 
   $("#datepicker").datepicker({
     dateFormat: "dd/mm/yy",
@@ -119,7 +132,7 @@ $(document).ready(function(){
   }
   
   // Color Picker
-  $('#colorSelector').ColorPicker({
+  /*$('#colorSelector').ColorPicker({
     color: '#ccc',
     onShow: function (colpkr) {
       $(colpkr).fadeIn(500);
@@ -132,7 +145,7 @@ $(document).ready(function(){
     onChange: function (hsb, hex, rgb) {
       $('#colorSelector div').css('backgroundColor', '#' + hex);
     }
-  });
+  });*/
   
   
   (function($){
@@ -169,15 +182,43 @@ $(document).ready(function(){
     }
 
     $.fn.update_color = function(uuid, hex){
-      $('#' + uuid).css('backgroundColor', '#' + hex);
-      $('#list_' + uuid).css('color', '#' + hex);
+      $('#' + uuid).css('backgroundColor', hex);
+      //$('#list_' + uuid).css('color', '#' + hex);
       var tasks = $.fn.get_tasks();
       var task = $.fn.parse_obj(tasks[uuid]);
-      task['color'] = '#'+hex;
+      task['color'] = hex;
       tasks[uuid] = JSON.stringify(task);
       localStorage['tasks'] = JSON.stringify(tasks);
     }
-    
+
+    $.fn.bind_color_update = function() {
+        $('.color_edit').click(function () {
+          var uuid = $(this).parent().attr('class').split(' ')[1];
+          var style_info = $(this).attr('style');
+          $(this).attr('style','');
+          $(this).html($('#clkp1').html());
+          $(this).next().hide();
+          $.fn.bind_color_palt(uuid,style_info);
+        });
+        $('.color_edit').mouseout(function () {
+          $(this).attr('style',style_info);
+          $(this).next().show();
+          $(this).children('#clkp2').remove();
+        });
+	  
+    }
+
+    $.fn.bind_color_palt = function (uuid,style_info) {
+        $('.color_palt').click(function (event) {
+          event.stopPropagation();
+          $.fn.update_color(uuid,$(this).css('background-color'));
+          $(this).closest('.color_edit').attr('style',style_info);
+          $(this).closest('.color_edit').next().show();
+          $(this).parent().remove();
+        });
+
+    }
+
     $.fn.bind_delete = function(){
       $('.close').click(function(){
         $(this).delete_task();
@@ -219,9 +260,10 @@ $(document).ready(function(){
     // Events
     $.fn.bind_delete();
     $.fn.bind_inline_editor();
+    $.fn.bind_color_update();
     
    // Color Picker
-    $('.tilebox').click(function(){
+   /* $('.tilebox').click(function(){
       var uuid = $(this).attr('class').split(' ')[1];
       $('#'+uuid.toString()).ColorPicker({
         onChange: function (hsb, hex, rgb) {
@@ -229,7 +271,7 @@ $(document).ready(function(){
           $.fn.update_color(uuid.toString(), hex);
         }
       });
-    })
+    })*/
     
   }
                 
@@ -250,7 +292,12 @@ $(document).ready(function(){
   //if tiles is empty, get it hidden
   if($('#tiles_container').children().length == 0){
     $('#tiles_container').css('display', 'none');
-    $('#tiles_list').css('display', 'none'); 
+  }else{
+    //create list right here
+  }
+
+  if($('#tiles_container1').children().length == 0){
+    $('#tiles_container1').css('display', 'none');
   }else{
     //create list right here
   }
@@ -269,6 +316,8 @@ $(document).ready(function(){
   
   // Create Task
   $("#btn_create").click(function(){
+    //hide the popup
+    $( "#form_container" ).hide();
     var task = $("#txt_task").val().trim();
     if($("#txt_task").is_empty()){
       if(is_duplicate(task)){
@@ -301,14 +350,15 @@ $(document).ready(function(){
         
         // Events
         $.fn.bind_delete();
+        $.fn.bind_color_update();
         $.fn.bind_inline_editor();
         
         // Color Picker
-        $('.tilebox').ColorPicker({
+        /*$('.tilebox').ColorPicker({
           onChange: function (hsb, hex, rgb) {
             $.fn.update_color(uuid_s, hex);
           }
-        });
+        });*/
       }
     }else{
       show_notification("Please enter a task!");
