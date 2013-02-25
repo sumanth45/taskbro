@@ -18,33 +18,46 @@
   <body>
     <section id="bd">
       <section id='app_title'>TaskBro :: Manage Task Online</section>
-      <hr>
-      <section class='notification' id='html5_support'>Oops! You browser does not support HTML5.</section>
-      <section id="form_container">
-        <!--<a href="#" style="position: relative;right: -384px;">
+      <section id='task_create'>
+	<div id="control_section" style="display:inline;">
+          <div style="position:relative;top:1px;left:1px;">
+            <input type="text" id="datepicker" class="txt_box" placeholder="Filter"/>
+          </div>
+	  
+	  <div id="show_btn" align="right" style="position:relative;top:1px;"> 
+	    <input id='btn_add' name='btn_add' type='button' value='Add' class='btn' />
+	  </div>
+        </div>
+        <div id="form_container" class="cont_clas">
+          <section id='dialog_title'>Create a task</section>
+          
+          <!--<a href="#" style="position: relative;right: -384px;">
           <span id='create' style=""></span>
-        </a>-->
-        <input id='txt_task' name="txt_task" class="txt_box" placeholder="Enter a task"></input>
-        <br>
-        <input id='btn_create' name='btn_create' type='button' value='Create' class='btn' />
+          </a>-->
+          <section style="padding:10px 10px;">
+            <input id='txt_task' name="txt_task" class="txt_box" placeholder="Enter a task"></input>
+            <br>
+            <input id='btn_create' name='btn_create' type='button' value='Create' class='btn' />
+            <input id='btn_cancel' name='btn_cancel' type='button' value='Cancel' class='btn' />
+          </section>
+        </div>
       </section>
+      <section class='notification' id='html5_support'>Oops! You browser does not support HTML5.</section>
       <section style="margin-top:30px;">
-        <section style="float:left;">
-          <input type="text" id="datepicker" class="txt_box" placeholder="Filter"/>
-        </section>
         <section style="float:right;">
           <a href="mailto:moinhaidar@gmail.com?subject=Tasks"></a>
         </section>
         <section class="clearfix"></section>
       </section>
-      <hr style='margin:3px 0px;'>
       <section id='notfound'>Hurray, No task pending for this date.</section>
-      <section id='container' class="clearfix">
-        <section id="tiles_list">
-        </section>
-        <section id='tiles_container'>
-        </section>
-      </section>
+      <table id='container' class="clearfix">
+        <tr>
+        <td id='tiles_container'>
+        </td>
+        <td id='tiles_container1'>
+        </td>
+        </tr>
+      </table>
     </section>
   </body>
 </html>
